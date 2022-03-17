@@ -30,6 +30,16 @@ export class Transform
 		this.modelTransformMatrix = mat4.create();
 		mat4.identity(this.modelTransformMatrix);
 
+		this.viewTransformMatrix = mat4.create();
+		mat4.identity(this.viewTransformMatrix);
+
+		this.projectionTransformMatrix = mat4.create();
+		mat4.identity(this.projectionTransformMatrix);
+
+		this.viewPortTransformMatrix = mat4.create();
+		mat4.identity(this.viewPortTransformMatrix);
+
+
 		this.updateModelTransformMatrix(1);
 	}
 

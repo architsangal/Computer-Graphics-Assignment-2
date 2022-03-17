@@ -145,7 +145,7 @@ export class Scene
 		{
 			this.primitives[i].transform.updateModelTransformMatrix(2);
 			let matrix = this.primitives[i].transform.modelTransformMatrix.slice();
-			let vertices = this.primitives[i].vertexPositions.slice();
+			let vertices = this.primitives[i].vertexArray.slice();
 			for(let j=0;j<vertices.length;j+=3)
 			{
 				let one_vertex = new Float32Array([vertices[j],vertices[j+1],vertices[j+2],1]);

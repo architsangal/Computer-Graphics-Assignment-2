@@ -1,5 +1,3 @@
-
-
 export class Shader
 {
 	constructor(gl, vertexShaderSrc, fragmentShaderSrc)
@@ -100,6 +98,12 @@ export class Shader
 		this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.DYNAMIC_DRAW);
 	}
 
+	bindElementBuffer(buffer, data)
+	{
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer);
+		this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, data, this.gl.DYNAMIC_DRAW);
+	}
+
 	fillAttributeData(attributeName, data, elementPerAttribute, stride, offset)
 	{		
 		this.gl.enableVertexAttribArray(this.attribute(attributeName));
@@ -109,5 +113,10 @@ export class Shader
 	drawArrays(numberOfElements) 
 	{
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, numberOfElements);
+	}
+
+	drawElements(numberOfElements) 
+	{
+		this.gl.drawElements(this.gl.TRIANGLES, numberOfElements, this.gl.UNSIGNED_BYTE, 0);
 	}
 }

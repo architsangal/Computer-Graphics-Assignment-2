@@ -44,14 +44,21 @@ export class WebGLRenderer
 
 			primitive.transform.updateModelTransformMatrix(m);
 
-			shader.bindArrayBuffer(shader.vertexAttributesBuffer, primitive.vertexPositions);
-			shader.fillAttributeData("aPosition", primitive.vertexPositions, 3,  3 * primitive.vertexPositions.BYTES_PER_ELEMENT, 0);		
-					
+			shader.bindArrayBuffer(shader.vertexAttributesBuffer, primitive.vertexArray);
+			shader.bindElementBuffer(shader.indexBuffer, primitive.vertexIndices);
+			
+			shader.fillAttributeData("aPosition", primitive.vertexArray, 3,  3 * primitive.vertexArray.BYTES_PER_ELEMENT, 0);		
+
 			shader.setUniform4f("uColor", primitive.color);
-			shader.setUniformMatrix4fv("matrixTransform",primitive.transform.modelTransformMatrix);
+
+			shader.setUniformMatrix4fv("uModelTransformMatrix",primitive.transform.modelTransformMatrix);
+			shader.setUniformMatrix4fv("uViewTransformMatrix",primitive.transform.viewTransformMatrix);
+			shader.setUniformMatrix4fv("uProjectionTransformMatrix",primitive.transform.projectionTransformMatrix);
+			shader.setUniformMatrix4fv("uViewPortTransformMatrix",primitive.transform.viewPortTransformMatrix);
 			
 			// Draw
-			shader.drawArrays(primitive.vertexPositions.length / 3);
+			// shader.drawArrays(primitive.vertexArray.length / 3);
+			shader.drawElements(primitive.vertexArray.length / 3);
 		});
 	}
 
