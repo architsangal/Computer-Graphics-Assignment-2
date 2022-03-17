@@ -110,13 +110,13 @@ export class Shader
 		this.gl.vertexAttribPointer(data, elementPerAttribute, this.gl.FLOAT, false, stride, offset);
 	}
 
-	drawArrays(numberOfElements) 
+	drawArrays(numberOfElements)
 	{
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, numberOfElements);
 	}
 
 	drawElements(numberOfElements) 
 	{
-		this.gl.drawElements(this.gl.TRIANGLES, numberOfElements, this.gl.UNSIGNED_BYTE, 0);
+		this.gl.drawElements(this.gl.TRIANGLES, numberOfElements, this.gl.UNSIGNED_SHORT, 0);
 	}
 }

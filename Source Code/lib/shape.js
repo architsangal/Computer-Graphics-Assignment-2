@@ -8,7 +8,7 @@ export class Shape
         this.name = name;
 		this.color = color;
 		this.vertexArray = new Float32Array(data.vertices);
-		this.vertexIndices = new Float32Array(data.indices);
+		this.vertexIndices = new Uint16Array(data.indices);
 		this.transform = new Transform(this);
 	}
 	
