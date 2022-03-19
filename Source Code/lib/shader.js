@@ -5,11 +5,11 @@ export class Shader
 		this.gl = gl;
 		this.vertexShaderSrc = vertexShaderSrc;
 		this.fragmentShaderSrc = fragmentShaderSrc;
-
+		this.vertexShader = this.compile(gl.VERTEX_SHADER, this.vertexShaderSrc);
+		this.fragmentShader = this.compile(gl.FRAGMENT_SHADER, this.fragmentShaderSrc);
 		this.program = this.link(
-			this.compile(gl.VERTEX_SHADER, this.vertexShaderSrc),
-			this.compile(gl.FRAGMENT_SHADER, this.fragmentShaderSrc)
-
+			this.vertexShader,
+			this.fragmentShader
 		);
 
 		this.vertexAttributesBuffer = this.createBuffer();
@@ -42,9 +42,10 @@ export class Shader
 			throw new Error(this.gl.getProgramInfoLog(program));
 		}
 
-		this.gl.deleteShader(this.vertexShader);
-		this.gl.deleteShader(this.fragmentShader);
-		this.gl.deleteProgram(this.shaderProgram);
+		// Uncomment the following 3 lines after testing as it is considered safe to delete after linking
+		// this.gl.deleteShader(this.vertexShader);
+		// this.gl.deleteShader(this.fragmentShader);
+		// this.gl.deleteProgram(this.shaderProgram);
 
 		return program;
 	}
@@ -92,6 +93,7 @@ export class Shader
 		return buffer;
 	}
 
+	// TODO Initially it was DYNAMIC_DRAW
 	bindArrayBuffer(buffer, data)
 	{
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
@@ -104,10 +106,13 @@ export class Shader
 		this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, data, this.gl.DYNAMIC_DRAW);
 	}
 
-	fillAttributeData(attributeName, data, elementPerAttribute, stride, offset)
-	{		
-		this.gl.enableVertexAttribArray(this.attribute(attributeName));
-		this.gl.vertexAttribPointer(data, elementPerAttribute, this.gl.FLOAT, false, stride, offset);
+	// fillAttributeData(attributeName, data, elementPerAttribute, stride, offset)
+	fillAttributeData(attributeName, elementPerAttribute, stride, offset)
+	{
+		let index = this.attribute(attributeName);
+		this.gl.enableVertexAttribArray(index);
+		// this.gl.vertexAttribPointer(data, elementPerAttribute, this.gl.FLOAT, false, stride, offset);
+		this.gl.vertexAttribPointer(index, elementPerAttribute, this.gl.FLOAT, false, stride, offset);
 	}
 
 	drawArrays(numberOfElements)
@@ -115,7 +120,7 @@ export class Shader
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, numberOfElements);
 	}
 
-	drawElements(numberOfElements) 
+	drawElements(numberOfElements)
 	{
 		this.gl.drawElements(this.gl.TRIANGLES, numberOfElements, this.gl.UNSIGNED_SHORT, 0);
 	}

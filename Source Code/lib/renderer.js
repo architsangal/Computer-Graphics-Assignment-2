@@ -2,7 +2,7 @@ export class WebGLRenderer
 {
 	constructor()
 	{
-		this.domElement = document.createElement("canvas");		
+		this.domElement = document.createElement("canvas");
 
 		this.gl = this.domElement.getContext("webgl") || this.domElement.getContext("experimental-webgl");
 		if (!this.gl) throw new Error("WebGL is not supported");
@@ -42,10 +42,12 @@ export class WebGLRenderer
 
 			primitive.transform.updateModelTransformMatrix();
 
+			// console.log(primitive.vertexArray);
 			shader.bindArrayBuffer(shader.vertexAttributesBuffer, primitive.vertexArray);
 			shader.bindElementBuffer(shader.indexBuffer, primitive.vertexIndices);
 			
-			shader.fillAttributeData("aPosition", primitive.vertexArray, 3,  3 * primitive.vertexArray.BYTES_PER_ELEMENT, 0,0);		
+			// shader.fillAttributeData("aPosition", primitive.vertexArray, 3,  3 * primitive.vertexArray.BYTES_PER_ELEMENT, 0,0);		
+			shader.fillAttributeData("aPosition", 3,  3 * primitive.vertexArray.BYTES_PER_ELEMENT, 0);
 
 			shader.setUniform4f("uColor", primitive.color);
 

@@ -6,15 +6,15 @@ import objLoader from 'https://cdn.skypack.dev/webgl-obj-loader';
 // Don't use .then use await
 async function arrow_info()
 {
-	let data = await fetch('./models/cube_tri.obj');
+	let data = await fetch('./models/cube2.obj');
 	data = await data.text();
 	let meshdata = await new objLoader.Mesh(data);
 	return meshdata;
 }
 let arrow_mesh_obj = await arrow_info();
 
-let render_X = 1200;
-let render_Y = 1200;
+let render_X = 600;
+let render_Y = 600;
 let m = 0;
 
 let scene = new Scene();
@@ -88,6 +88,7 @@ document.addEventListener('keydown', (event) =>
 		let current = nearestShape.transform.getScale().slice();
 		current[0] += 0.1;
 		current[1] += 0.1;
+		current[2] += 0.1;
 		nearestShape.transform.setScale(current);
 	}
 	else if(key == "-")
@@ -95,6 +96,7 @@ document.addEventListener('keydown', (event) =>
 		let current = nearestShape.transform.getScale().slice();
 		current[0] -= 0.1;
 		current[1] -= 0.1;
+		current[2] -= 0.1;
 		nearestShape.transform.setScale(current);
 	}
   }, false);

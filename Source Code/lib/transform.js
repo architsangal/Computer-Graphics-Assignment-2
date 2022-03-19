@@ -20,14 +20,14 @@ export class Transform
 		this.modelTransformMatrix = mat4.create();
 		mat4.identity(this.modelTransformMatrix);
 
-		this.viewTransformMatrix = mat4.create();
-		mat4.identity(this.viewTransformMatrix);
+		// this.viewTransformMatrix = mat4.create();
+		// mat4.identity(this.viewTransformMatrix);
 
-		this.projectionTransformMatrix = mat4.create();
-		mat4.identity(this.projectionTransformMatrix);
+		// this.projectionTransformMatrix = mat4.create();
+		// mat4.identity(this.projectionTransformMatrix);
 
-		this.viewPortTransformMatrix = mat4.create();
-		mat4.identity(this.viewPortTransformMatrix);
+		// this.viewPortTransformMatrix = mat4.create();
+		// mat4.identity(this.viewPortTransformMatrix);
 
 
 		this.updateModelTransformMatrix(1);
@@ -40,16 +40,16 @@ export class Transform
 		mat4.identity(this.modelTransformMatrix);
 
 		let centroid = this.shape.centroid();
-		mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, centroid);
+		// mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, centroid);
 
 		mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, this.translate);
 
 		mat4.rotate(this.modelTransformMatrix, this.modelTransformMatrix, this.rotationAngle, this.rotationAxis);
 		mat4.scale(this.modelTransformMatrix, this.modelTransformMatrix, this.scale);
 
-		let translate_origin = vec3.create();
-		vec3.set(translate_origin, -centroid[0], -centroid[1], -centroid[2]);
-		mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, translate_origin);
+		// let translate_origin = vec3.create();
+		// vec3.set(translate_origin, -centroid[0], -centroid[1], -centroid[2]);
+		// mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, translate_origin);
 	}	
 
 	setCompleteCentroid(completeCentroid)

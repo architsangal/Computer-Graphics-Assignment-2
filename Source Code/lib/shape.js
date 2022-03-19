@@ -5,6 +5,7 @@ export class Shape
 	constructor(data,color,name)
 	{
         this.data = data;
+		console.log(data);
         this.name = name;
 		this.color = color;
 		this.vertexArray = new Float32Array(data.vertices);
