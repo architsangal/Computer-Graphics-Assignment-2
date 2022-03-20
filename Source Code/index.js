@@ -10,7 +10,7 @@ function globalInit()
 {
 	window.viewMatrix = mat4.create();
 	window.projMatrix = mat4.create();
-	window.eye = [3,3,3];
+	window.eye = [0,0,3];
 	window.up = [0,1,0];
 	mat4.lookAt(viewMatrix,eye,[0,0,0],up);
 	mat4.perspective(projMatrix,45*Math.PI/180,1,0.1,1000);
@@ -41,7 +41,7 @@ let object2 = await importingObjFiles("Object2.obj");
 
 let render_X = 600;
 let render_Y = 600;
-let m = 0;
+let m = 1;
 
 let scene = new Scene();
 AddElementsToScene(scene);
@@ -58,7 +58,7 @@ renderer.setAnimationLoop( animation );
 function animation()
 {
 	renderer.clear(0.8,0.8,0.8,1);
-	renderer.render(scene, shader,m);
+	renderer.render(scene, shader);
 }
 
 function AddElementsToScene(scene)
@@ -87,7 +87,6 @@ function AddElementsToScene(scene)
 	monkeyWithCap.transform.setScale(current);
 
 	current = monkeyWithCap.transform.getTranslateX();
-	console.log(current);
 	current[0] -= 1;
 	monkeyWithCap.transform.setTranslateX(current);
 	
@@ -96,7 +95,6 @@ function AddElementsToScene(scene)
 	const ballWithRing = new Shape(object2,[0.5,0.5,1,1],true,"Ball With Ring");
 	
 	current = ballWithRing.transform.getTranslateX();
-	console.log(current);
 	current[0] += 1;
 	ballWithRing.transform.setTranslateX(current);
 	
@@ -167,7 +165,23 @@ document.addEventListener('keydown', (event) =>
 {
 	let key = event.key;
 
-	if(key == 'ArrowUp')
+	if(key == 'm')
+	{
+		if(m==1)
+		{
+			m=2;
+			window.eye = [3,3,3];
+			mat4.lookAt(viewMatrix,eye,[0,0,0],up);
+		}
+		else
+		{
+			m=1;
+			window.eye = [0,0,3];
+			mat4.lookAt(viewMatrix,eye,[0,0,0],up);
+		}
+		console.log(m);
+	}
+	else if(key == 'ArrowUp')
 	{
 		let current = nearestShape.transform.getTranslate().slice();
 		current[1] += 0.1;
