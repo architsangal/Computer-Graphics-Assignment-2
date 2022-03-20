@@ -16,14 +16,24 @@ export class Scene
 	selectionByColor(data)
 	{
 		let min = 10000;
-		data[0] = data[0]/255;
-		data[1] = data[1]/255;
-		data[2] = data[2]/255;
-		data[3] = data[3]/255;
+		data = new Float32Array(data);
+		data[0] = data[0]/255.0;
+		data[1] = data[1]/255.0;
+		data[2] = data[2]/255.0;
+		data[3] = data[3]/255.0;
+
+		let diffCanvas = data[0] - 0.8 + data[1] - 0.8 + data[2] - 0.8 + data[3] - 1;
+		if(diffCanvas < 0.002 && diffCanvas >-0.002)
+		{
+			console.log("Clicked on canvas");
+			return undefined;
+		}
 
 		let nearest;
 		for(let i=0;i<this.primitives.length;i++)
 		{
+			if(this.primitives[i].isSelectable == false)
+				continue;
 			let temp = this.colorDistance(this.primitives[i],data);
 			if(temp < min)
 			{

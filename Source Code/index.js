@@ -25,16 +25,19 @@ let transformSettings = {
 }
 
 // Don't use .then use await
-async function arrow_info()
+async function importingObjFiles(name)
 {
-	let data = await fetch('./models/arrow.obj');
+	let data = await fetch('./models/'+name);
 	data = await data.text();
 	let meshdata = await new objLoader.Mesh(data);
 	return meshdata;
 }
-let arrow_x = await arrow_info();
-let arrow_y = await arrow_info();
-let arrow_z = await arrow_info();
+
+let arrow_x = await importingObjFiles("arrow.obj");
+let arrow_y = await importingObjFiles("arrow.obj");
+let arrow_z = await importingObjFiles("arrow.obj");
+let object1 = await importingObjFiles("Object1.obj");
+let object2 = await importingObjFiles("Object2.obj");
 
 let render_X = 600;
 let render_Y = 600;
@@ -60,20 +63,45 @@ function animation()
 
 function AddElementsToScene(scene)
 {
-	const arrowX = new Shape(arrow_x,[1,0,0,1],"ArrowX");
+	const arrowX = new Shape(arrow_x,[1,0,0,1],false,"ArrowX");
 	scene.add(arrowX);
 
-	const arrowY = new Shape(arrow_y,[0,1,0,1],"ArrowY");
+	const arrowY = new Shape(arrow_y,[0,1,0,1],false,"ArrowY");
 	let current = arrowY.transform.getRotationAngleZ();
 	current += 3.142/2;
 	arrowY.transform.setRotationAngleZ(current);
 	scene.add(arrowY);
 
-	const arrowZ = new Shape(arrow_z,[0,0,1,1],"ArrowZ");
+	const arrowZ = new Shape(arrow_z,[0,0,1,1],false,"ArrowZ");
 	current = arrowZ.transform.getRotationAngleY();
 	current -= 3.142/2;
 	arrowZ.transform.setRotationAngleY(current);
 	scene.add(arrowZ);
+
+	const monkeyWithCap = new Shape(object1,[0.2,0.4,0.3,1],true,"Monkey With a cap");
+	
+	current = monkeyWithCap.transform.getScale().slice();
+	current[0] -= 0.75;
+	current[1] -= 0.75;
+	current[2] -= 0.75;
+	monkeyWithCap.transform.setScale(current);
+
+	current = monkeyWithCap.transform.getTranslateX();
+	console.log(current);
+	current[0] -= 1;
+	monkeyWithCap.transform.setTranslateX(current);
+	
+	scene.add(monkeyWithCap);
+
+	const ballWithRing = new Shape(object2,[0.5,0.5,1,1],true,"Ball With Ring");
+	
+	current = ballWithRing.transform.getTranslateX();
+	console.log(current);
+	current[0] += 1;
+	ballWithRing.transform.setTranslateX(current);
+	
+	scene.add(ballWithRing);
+
 }
 
 // Canvas created
@@ -92,7 +120,6 @@ function onmousedown(event)
 	const rect = canvas.getBoundingClientRect();
 	mouseX = event.clientX - rect.left;
 	mouseY = event.clientY - rect.top;
-	// console.log(mouseX + " " + mouseY + "\n");
 
 	const pixelX = mouseX * gl.canvas.width / gl.canvas.clientWidth;
 	const pixelY = gl.canvas.height - mouseY * gl.canvas.height / gl.canvas.clientHeight - 1;
@@ -107,10 +134,11 @@ function onmousedown(event)
 		gl.UNSIGNED_BYTE,  // type
 		data);             // typed array to hold result
 
-	console.log(data);
-
 	nearestShape = scene.selectionByColor(data);
-	console.log(nearestShape.name);
+	if(nearestShape == undefined)
+		console.log("No shape selected");
+	else
+		console.log(nearestShape.name);
 }
 
 gui.add(transformSettings, 'translateX', -1.0, 1.0).step(0.01).onChange(function ()

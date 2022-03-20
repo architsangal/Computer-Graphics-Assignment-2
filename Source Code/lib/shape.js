@@ -2,8 +2,9 @@ import {Transform} from './transform.js';
 
 export class Shape
 {
-	constructor(data,color,name)
+	constructor(data,color,isSelectable,name)
 	{
+		this.isSelectable = isSelectable;
         this.data = data;
         this.name = name;
 		this.color = color;

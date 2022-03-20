@@ -42,11 +42,9 @@ export class WebGLRenderer
 
 			primitive.transform.updateModelTransformMatrix();
 
-			// console.log(primitive.vertexArray);
 			shader.bindArrayBuffer(shader.vertexAttributesBuffer, primitive.vertexArray);
 			shader.bindElementBuffer(shader.indexBuffer, primitive.vertexIndices);
 			
-			// shader.fillAttributeData("aPosition", primitive.vertexArray, 3,  3 * primitive.vertexArray.BYTES_PER_ELEMENT, 0,0);		
 			shader.fillAttributeData("aPosition", 3,  3 * primitive.vertexArray.BYTES_PER_ELEMENT, 0);
 
 			shader.setUniform4f("uColor", primitive.color);
@@ -56,7 +54,6 @@ export class WebGLRenderer
 			shader.setUniformMatrix4fv("projMatrix",window.projMatrix);
 			
 			// Draw
-			// shader.drawArrays(primitive.vertexArray.length / 3);
 			shader.drawElements(primitive.vertexIndices.length);
 		});
 	}
