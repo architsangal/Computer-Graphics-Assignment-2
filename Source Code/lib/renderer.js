@@ -51,7 +51,10 @@ export class WebGLRenderer
 
 			shader.setUniform4f("uColor", primitive.color);
 
-			shader.setUniformMatrix4fv("transformationMatrix",primitive.transform.modelTransformMatrix);
+			shader.setUniformMatrix4fv("modelMatrix",primitive.transform.modelTransformMatrix);
+			// console.log(window.viewMatrix);
+			shader.setUniformMatrix4fv("viewMatrix",window.viewMatrix);
+			shader.setUniformMatrix4fv("projMatrix",window.projMatrix);
 			
 			// Draw
 			// shader.drawArrays(primitive.vertexArray.length / 3);
