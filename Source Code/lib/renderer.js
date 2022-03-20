@@ -4,7 +4,7 @@ export class WebGLRenderer
 	{
 		this.domElement = document.createElement("canvas");
 
-		this.gl = this.domElement.getContext("webgl") || this.domElement.getContext("experimental-webgl");
+		this.gl = this.domElement.getContext("webgl",{preserveDrawingBuffer: true}) || this.domElement.getContext("experimental-webgl");
 		if (!this.gl) throw new Error("WebGL is not supported");
 
 		this.setSize(50,50);
@@ -52,7 +52,6 @@ export class WebGLRenderer
 			shader.setUniform4f("uColor", primitive.color);
 
 			shader.setUniformMatrix4fv("modelMatrix",primitive.transform.modelTransformMatrix);
-			// console.log(window.viewMatrix);
 			shader.setUniformMatrix4fv("viewMatrix",window.viewMatrix);
 			shader.setUniformMatrix4fv("projMatrix",window.projMatrix);
 			
@@ -65,12 +64,5 @@ export class WebGLRenderer
 	glContext()
 	{
 		return this.gl;
-	}
-
-	mouseToClipCoord(mouseX,mouseY) {
-
-		// @ToDo
-		// Did it in index.js
-		// Not required
 	}
 }

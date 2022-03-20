@@ -13,6 +13,27 @@ export class Scene
 		}
 	}
 
+	selectionByColor(data)
+	{
+		let min = 10000;
+		data[0] = data[0]/255;
+		data[1] = data[1]/255;
+		data[2] = data[2]/255;
+		data[3] = data[3]/255;
+
+		let nearest;
+		for(let i=0;i<this.primitives.length;i++)
+		{
+			let temp = this.colorDistance(this.primitives[i],data);
+			if(temp < min)
+			{
+				min = temp;
+				nearest = this.primitives[i];
+			}
+		}
+		return nearest;
+	}
+
 	getNearestShape(x,y,z)
 	{
 		let min = 10000;
@@ -27,6 +48,18 @@ export class Scene
 			}
 		}
 		return nearest;
+	}
+
+	colorDistance(shape,data)
+	{
+		let color = shape.color;
+		
+		let distance = Math.sqrt((color[0]-data[0])*(color[0]-data[0])+
+		(color[1]-data[1])*(color[1]-data[1])+
+		(color[2]-data[2])*(color[2]-data[2])+
+		(color[3]-data[3])*(color[3]-data[3]));
+
+		return distance;
 	}
 
 	distance(shape,x,y,z)

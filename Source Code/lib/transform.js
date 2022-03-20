@@ -7,15 +7,29 @@ export class Transform
 		this.shape = shape;
 		this.completeCentroid = [0,0,0];
 
-		this.translate = vec3.create();
-		vec3.set(this.translate, 0, 0, 0);
+		this.translateX = vec3.create();
+		vec3.set(this.translateX, 0, 0, 0);
 		
+		this.translateY = vec3.create();
+		vec3.set(this.translateY, 0, 0, 0);
+
+		this.translateZ = vec3.create();
+		vec3.set(this.translateZ, 0, 0, 0);
+
 		this.scale = vec3.create();
 		vec3.set(this.scale, 1, 1, 1);
 		
-		this.rotationAngle = 0; // required in radians
-		this.rotationAxis = vec3.create();
-		vec3.set(this.rotationAxis, 1, 1, 0);
+		this.rotationAngleX = 0; // required in radians
+		this.rotationAxisX = vec3.create();
+		vec3.set(this.rotationAxisX, 1, 0, 0);
+
+		this.rotationAngleY = 0; // required in radians
+		this.rotationAxisY = vec3.create();
+		vec3.set(this.rotationAxisY, 0, 1, 0);
+
+		this.rotationAngleZ = 0; // required in radians
+		this.rotationAxisZ = vec3.create();
+		vec3.set(this.rotationAxisZ, 0, 0, 1);
 
 		this.modelTransformMatrix = mat4.create();
 		mat4.identity(this.modelTransformMatrix);
@@ -39,12 +53,17 @@ export class Transform
 	{
 		mat4.identity(this.modelTransformMatrix);
 
-		let centroid = this.shape.centroid();
+		// let centroid = this.shape.centroid();
 		// mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, centroid);
 
-		mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, this.translate);
+		mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, this.translateX);
+		mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, this.translateY);
+		mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, this.translateZ);
 
-		mat4.rotate(this.modelTransformMatrix, this.modelTransformMatrix, this.rotationAngle, this.rotationAxis);
+		mat4.rotate(this.modelTransformMatrix, this.modelTransformMatrix, this.rotationAngleX, this.rotationAxisX);
+		mat4.rotate(this.modelTransformMatrix, this.modelTransformMatrix, this.rotationAngleY, this.rotationAxisY);
+		mat4.rotate(this.modelTransformMatrix, this.modelTransformMatrix, this.rotationAngleZ, this.rotationAxisZ);
+
 		mat4.scale(this.modelTransformMatrix, this.modelTransformMatrix, this.scale);
 
 		// let translate_origin = vec3.create();
@@ -57,12 +76,28 @@ export class Transform
 		this.completeCentroid = completeCentroid;
 	}
 
-	setTranslate(translateV) {
-		this.translate = translateV;
+	setTranslateX(translateX) {
+		this.translateX = translateX;
 	}
 
-	getTranslate() {
-		return this.translate;
+	getTranslateX() {
+		return this.translateX;
+	}
+
+	setTranslateY(translateY) {
+		this.translateY = translateY;
+	}
+
+	getTranslateY() {
+		return this.translateY;
+	}
+
+	setTranslateZ(translateZ) {
+		this.translateZ = translateZ;
+	}
+
+	getTranslateZ() {
+		return this.translateZ;
 	}
 
 	setScale(scaleV) {
@@ -73,36 +108,27 @@ export class Transform
 		return this.scale;
 	}
 
-	setRotationAngle(rotationAngle){
-		this.rotationAngle = rotationAngle;
+	setRotationAngleX(rotationAngleX){
+		this.rotationAngleX = rotationAngleX;
 	}
 
-	getRotationAngle(rotationAngle){
-		return this.rotationAngle;
+	getRotationAngleX(rotationAngleX){
+		return this.rotationAngleX;
 	}
 
-	setTranslate_m2(translateV,scene)
-	{
-		this.translate_m2 = translateV;
+	setRotationAngleY(rotationAngleY){
+		this.rotationAngleY = rotationAngleY;
 	}
 
-	getTranslate_m2() {
-		return this.translate_m2;
+	getRotationAngleY(rotationAngleY){
+		return this.rotationAngleY;
 	}
 
-	setScale_m2(scaleV) {
-		this.scale_m2 = scaleV;
+	setRotationAngleZ(rotationAngleZ){
+		this.rotationAngleZ = rotationAngleZ;
 	}
 
-	getScale_m2() {
-		return this.scale_m2;
-	}
-
-	setRotationAngle_m2(rotationAngle){
-		this.rotationAngle_m2 = rotationAngle;
-	}
-
-	getRotationAngle_m2(rotationAngle){
-		return this.rotationAngle_m2;
+	getRotationAngleZ(rotationAngleZ){
+		return this.rotationAngleZ;
 	}
 }
