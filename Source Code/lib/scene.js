@@ -34,7 +34,12 @@ export class Scene
 		{
 			if(this.primitives[i].isSelectable == false)
 				continue;
+
 			let temp = this.colorDistance(this.primitives[i],data);
+
+			if(temp >= 0.02)
+				continue;
+
 			if(temp < min)
 			{
 				min = temp;

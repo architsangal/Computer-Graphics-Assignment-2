@@ -10,7 +10,7 @@ function globalInit()
 {
 	window.viewMatrix = mat4.create();
 	window.projMatrix = mat4.create();
-	window.eye = [0,0,6];
+	window.eye = [3,3,3];
 	window.up = [0,1,0];
 	mat4.lookAt(viewMatrix,eye,[0,0,0],up);
 	mat4.perspective(projMatrix,45*Math.PI/180,1,0.1,1000);
