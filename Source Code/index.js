@@ -134,11 +134,19 @@ function onmousedown(event)
 		gl.UNSIGNED_BYTE,  // type
 		data);             // typed array to hold result
 
+	let temp = nearestShape;
 	nearestShape = scene.selectionByColor(data);
+
+	if(temp != undefined)
+		temp.color = temp.original_color;
+
 	if(nearestShape == undefined)
 		console.log("No shape selected");
 	else
+	{
+		nearestShape.color = [0.1,0.1,0.1,1];
 		console.log(nearestShape.name);
+	}
 }
 
 gui.add(transformSettings, 'translateX', -1.0, 1.0).step(0.01).onChange(function ()

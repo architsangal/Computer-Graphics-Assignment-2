@@ -5,6 +5,7 @@ export class Shape
 	constructor(data,color,isSelectable,name)
 	{
 		this.isSelectable = isSelectable;
+		this.original_color = color;
         this.data = data;
         this.name = name;
 		this.color = color;
