@@ -21,13 +21,10 @@ function globalInit()
 	window.up = [0,1,0];
 	mat4.lookAt(viewMatrix,eye,[0,0,0],up);
 	mat4.perspective(projMatrix,45*Math.PI/180,1,0.1,1000);
+
+	window.animationMode = 0;
 }
 globalInit();
-
-let transformSettings = {
-	translateX: 0.0,
-	rotationAngle: 0.0
-}
 
 // Don't use .then use await
 async function importingObjFiles(name)
@@ -43,7 +40,7 @@ let arrow_y = await importingObjFiles("arrow.obj");
 let arrow_z = await importingObjFiles("arrow.obj");
 let object1 = await importingObjFiles("Object1.obj");
 let object2 = await importingObjFiles("Object2.obj");
-
+console.log(arrow_x);
 let render_X = 800;
 let render_Y = 800;
 let m = 1;
@@ -137,7 +134,7 @@ let mouseY = -1;
 
 function onmousedown(event)
 {
-	if(m == 1)
+	if(m == 1 && animationMode == 0)
 	{
 		const rect = canvas.getBoundingClientRect();
 		mouseX = event.clientX - rect.left;
@@ -170,7 +167,17 @@ function onmousedown(event)
 			console.log(nearestShape.name);
 		}
 	}
-	else
+	else if(m==1 && animationMode == 1)
+	{
+		// if(nearestShape != undefined)
+		// 	nearestShape.color = nearestShape.original_color;
+		// nearestShape = undefined;
+		console.log(nearestShape.centroid());
+		let mouseX = event.clientX;
+		let mouseY = event.clientY;
+		console.log(clipToWorld([(event.clientX-render_X)/render_X*2-1,-event.clientY/render_Y*2+1])+" "+mouseX+" "+mouseY+"\n");
+	}
+	else if(m==2)
 	{
 		if(click_m2 == 0)
 			click_m2 = 1;
@@ -330,14 +337,25 @@ document.addEventListener('keydown', (event) =>
 	{
 		window.CameraRotationAxis = 'z';
 	}
+	else if(key == "y")
+	{
+		if(m==1)
+		{
+			if(animationMode == 0)
+				animationMode = 1;
+			else
+				animationMode = 0;
+		}
+	}
   }, false);
 
 canvas.addEventListener('mousemove', (event) =>
 {
 	if(m == 2 && click_m2 == 1)
 	{
-		let rotationAngleAboutAxis = -0.25 * (Math.PI/ 180) * (event.clientX - last_mouse_location);
+		let rotationAngleAboutAxis = -0.004 * (event.clientX - last_mouse_location);
 		// (event.clientX - last_mouse_location) is the displacement. It can be negative and positive.
+		// -0.004 is a scaling factor of rotation
 
 		rotateCameraAboutAxis(rotationAngleAboutAxis);
 		last_mouse_location = event.clientX;
@@ -371,4 +389,48 @@ function rotateCameraAboutAxis(rotationAngle){
 
 	mat4.lookAt(viewMatrix,eye,[0,0,0],up);
 	mat4.perspective(projMatrix,45*Math.PI/180,1,0.1,1000);
+}
+
+function clipToWorld(point)
+{
+	let viewProjMat = mat4.create();
+	mat4.multiply(viewProjMat,projMatrix,viewMatrix);
+
+	let invViewProjMat = mat4.create();
+	mat4.invert(invViewProjMat,viewProjMat);
+
+	let pointIn3D = vec3.fromValues(point[0],point[1],0.934);
+	let worldCoor = vec3.create();
+
+	vec3.transformMat4(worldCoor,pointIn3D,invViewProjMat);
+
+	return worldCoor;
+}
+
+canvas.addEventListener('mousedown', function(event)
+{
+	worldClick(event);
+}
+);
+
+// testing function given by amit tomar
+function worldClick(event)
+{
+	console.log((event.clientX)/render_X*2-1 + " " + (-event.clientY/render_Y*2+1));
+	console.log(clipToWorld([(event.clientX)/render_X*2-1,-event.clientY/render_Y*2+1]));
+	
+	let tempX = nearestShape.transform.getTranslateX();
+	let tempY = nearestShape.transform.getTranslateY();
+	let tempZ = nearestShape.transform.getTranslateZ();
+
+	let worldCoor = clipToWorld([(event.clientX)/render_X*2-1,-event.clientY/render_Y*2+1]);
+
+	tempX[0] = worldCoor[0];
+	tempY[1] = worldCoor[1];
+	tempZ[2] = worldCoor[2];
+	
+	nearestShape.transform.setTranslateX(tempX);
+	nearestShape.transform.setTranslateY(tempY);
+	nearestShape.transform.setTranslateZ(tempZ);
+	// nearestShape.transform.translate = worldCoor;
 }

@@ -16,18 +16,20 @@ export class Shape
 	
 	centroid()
 	{
-		let x=0.0,y=0.0,z=0.0;
+		let x=0.0;
+		let y=0.0;
+		let z=0.0;
+
 		let vertices_number = 0;
 		for(let i=0,j=1,k=2;k<this.vertexArray.length;i+=3,j+=3,k+=3)
 		{
 			vertices_number += 1;
-			x += this.vertexArray[i];
-			y += this.vertexArray[j];
-			z += this.vertexArray[k];
+			x += this.vertexArray[i]+this.transform.getTranslateX()[0];
+			y += this.vertexArray[j]+this.transform.getTranslateY()[1];
+			z += this.vertexArray[k]+this.transform.getTranslateZ()[2];
 		}
 
 		let point = [x/vertices_number,y/vertices_number,z/vertices_number];
-
 		return point;
 	}
 }
