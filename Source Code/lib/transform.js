@@ -3,10 +3,7 @@ import { vec3, mat4 } from 'https://cdn.skypack.dev/gl-matrix';
 export class Transform
 {
 	constructor(shape)
-	{		
-		this.shape = shape;
-		this.completeCentroid = [0,0,0];
-
+	{
 		this.translateX = vec3.create();
 		vec3.set(this.translateX, 0, 0, 0);
 		
@@ -70,11 +67,6 @@ export class Transform
 		// vec3.set(translate_origin, -centroid[0], -centroid[1], -centroid[2]);
 		// mat4.translate(this.modelTransformMatrix, this.modelTransformMatrix, translate_origin);
 	}	
-
-	setCompleteCentroid(completeCentroid)
-	{
-		this.completeCentroid = completeCentroid;
-	}
 
 	setTranslateX(translateX) {
 		this.translateX = translateX;

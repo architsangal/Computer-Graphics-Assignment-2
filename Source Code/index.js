@@ -2,7 +2,6 @@ import { Scene, Shape, WebGLRenderer, Shader } from './lib/threeD.js';
 import {vertexShaderSrc} from './shaders/vertex.js';
 import {fragmentShaderSrc} from './shaders/fragment.js';
 import objLoader from 'https://cdn.skypack.dev/webgl-obj-loader';
-import * as dat from 'https://cdn.skypack.dev/dat.gui';
 import { vec4, mat4 } from 'https://cdn.skypack.dev/gl-matrix';
 
 // Global Variables
@@ -16,8 +15,6 @@ function globalInit()
 	mat4.perspective(projMatrix,45*Math.PI/180,1,0.1,1000);
 }
 globalInit();
-
-const gui = new dat.GUI();
 
 let transformSettings = {
 	translateX: 0.0,
@@ -64,15 +61,32 @@ function animation()
 function AddElementsToScene(scene)
 {
 	const arrowX = new Shape(arrow_x,[1,0,0,1],false,"ArrowX");
+	let current = arrowX.transform.getScale();
+	current[0] += 2;
+	current[1] += 2;
+	current[2] += 2;
+	arrowX.transform.setScale(current);
 	scene.add(arrowX);
 
 	const arrowY = new Shape(arrow_y,[0,1,0,1],false,"ArrowY");
-	let current = arrowY.transform.getRotationAngleZ();
+	current = arrowY.transform.getScale();
+	current[0] += 2;
+	current[1] += 2;
+	current[2] += 2;
+	arrowY.transform.setScale(current);
+	
+	current = arrowY.transform.getRotationAngleZ();
 	current += 3.142/2;
 	arrowY.transform.setRotationAngleZ(current);
 	scene.add(arrowY);
 
 	const arrowZ = new Shape(arrow_z,[0,0,1,1],false,"ArrowZ");
+	current = arrowZ.transform.getScale();
+	current[0] += 2;
+	current[1] += 2;
+	current[2] += 2;
+	arrowZ.transform.setScale(current);
+	
 	current = arrowZ.transform.getRotationAngleY();
 	current -= 3.142/2;
 	arrowZ.transform.setRotationAngleY(current);
@@ -105,7 +119,7 @@ function AddElementsToScene(scene)
 // Canvas created
 // Adding Events to it
 let canvas = renderer.domElement;
-let nearestShape = scene.primitives[0];
+let nearestShape;
 canvas.addEventListener('mousedown', function(event){ onmousedown(event);});
 const data = new Uint8Array(4);
 
@@ -115,51 +129,40 @@ let mouseY = -1;
 
 function onmousedown(event)
 {
-	const rect = canvas.getBoundingClientRect();
-	mouseX = event.clientX - rect.left;
-	mouseY = event.clientY - rect.top;
-
-	const pixelX = mouseX * gl.canvas.width / gl.canvas.clientWidth;
-	const pixelY = gl.canvas.height - mouseY * gl.canvas.height / gl.canvas.clientHeight - 1;
-
-	renderer.render(scene,shader);
-	renderer.gl.readPixels(
-		pixelX,            // x
-		pixelY,            // y
-		1,                 // width
-		1,                 // height
-		gl.RGBA,           // format
-		gl.UNSIGNED_BYTE,  // type
-		data);             // typed array to hold result
-
-	let temp = nearestShape;
-	nearestShape = scene.selectionByColor(data);
-
-	if(temp != undefined)
-		temp.color = temp.original_color;
-
-	if(nearestShape == undefined)
-		console.log("No shape selected");
-	else
+	if(m == 1)
 	{
-		nearestShape.color = [0.1,0.1,0.1,1];
-		console.log(nearestShape.name);
+		const rect = canvas.getBoundingClientRect();
+		mouseX = event.clientX - rect.left;
+		mouseY = event.clientY - rect.top;
+
+		const pixelX = mouseX * gl.canvas.width / gl.canvas.clientWidth;
+		const pixelY = gl.canvas.height - mouseY * gl.canvas.height / gl.canvas.clientHeight - 1;
+
+		renderer.render(scene,shader);
+		renderer.gl.readPixels(
+			pixelX,            // x
+			pixelY,            // y
+			1,                 // width
+			1,                 // height
+			gl.RGBA,           // format
+			gl.UNSIGNED_BYTE,  // type
+			data);             // typed array to hold result
+
+		let temp = nearestShape;
+		nearestShape = scene.selectionByColor(data);
+
+		if(temp != undefined)
+			temp.color = temp.original_color;
+
+		if(nearestShape == undefined)
+			console.log("No shape selected");
+		else
+		{
+			nearestShape.color = [0.1,0.1,0.1,1];
+			console.log(nearestShape.name);
+		}
 	}
 }
-
-gui.add(transformSettings, 'translateX', -1.0, 1.0).step(0.01).onChange(function ()
-{
-	let current = nearestShape.transform.getTranslateX().slice();
-	current[0] = transformSettings.translateX;
-	nearestShape.transform.setTranslateX(current,scene);
-});
-
-gui.add(transformSettings, 'rotationAngle', -Math.PI, Math.PI).step(0.01).onChange(function ()
-{
-	let current = nearestShape.transform.getRotationAngle();
-	current = transformSettings.rotationAngle;
-	nearestShape.transform.setRotationAngle(current);
-});
 
 document.addEventListener('keydown', (event) =>
 {
@@ -183,39 +186,75 @@ document.addEventListener('keydown', (event) =>
 	}
 	else if(key == 'ArrowUp')
 	{
-		let current = nearestShape.transform.getTranslate().slice();
+		let current = nearestShape.transform.getTranslateY().slice();
 		current[1] += 0.1;
-		nearestShape.transform.setTranslate(current,scene);
+		nearestShape.transform.setTranslateY(current);
 	}
 	else if(key == 'ArrowDown')
 	{
-		let current = nearestShape.transform.getTranslate().slice();
+		let current = nearestShape.transform.getTranslateY().slice();
 		current[1] -= 0.1;
-		nearestShape.transform.setTranslate(current,scene);
+		nearestShape.transform.setTranslateY(current);
 	}
 	else if(key == 'ArrowLeft')
 	{
-		let current = nearestShape.transform.getTranslate().slice();
+		let current = nearestShape.transform.getTranslateX().slice();
 		current[0] -= 0.1;
-		nearestShape.transform.setTranslate(current,scene);
+		nearestShape.transform.setTranslateX(current);
 	}
 	else if(key == 'ArrowRight')
 	{
-		let current = nearestShape.transform.getTranslate().slice();
+		let current = nearestShape.transform.getTranslateX().slice();
 		current[0] += 0.1;
-		nearestShape.transform.setTranslate(current,scene);
+		nearestShape.transform.setTranslateX(current);
 	}
-	else if(key == '/')
+	else if(key == 'o')
 	{
-		let current = nearestShape.transform.getRotationAngle();
+		let current = nearestShape.transform.getTranslateZ().slice();
+		current[2] -= 0.1;
+		nearestShape.transform.setTranslateZ(current);
+	}
+	else if(key == 'p')
+	{
+		let current = nearestShape.transform.getTranslateZ().slice();
+		current[2] += 0.1;
+		nearestShape.transform.setTranslateZ(current);
+	}
+	else if(key == 'q')
+	{
+		let current = nearestShape.transform.getRotationAngleX();
 		current += 3.142/30;
-		nearestShape.transform.setRotationAngle(current);
+		nearestShape.transform.setRotationAngleX(current);
 	}
-	else if(key == "\\")
+	else if(key == "w")
 	{
-		let current = nearestShape.transform.getRotationAngle();
+		let current = nearestShape.transform.getRotationAngleX();
 		current -= 3.142/30;
-		nearestShape.transform.setRotationAngle(current);
+		nearestShape.transform.setRotationAngleX(current);
+	}
+	else if(key == 'a')
+	{
+		let current = nearestShape.transform.getRotationAngleY();
+		current += 3.142/30;
+		nearestShape.transform.setRotationAngleY(current);
+	}
+	else if(key == "s")
+	{
+		let current = nearestShape.transform.getRotationAngleY();
+		current -= 3.142/30;
+		nearestShape.transform.setRotationAngleY(current);
+	}
+	else if(key == 'z')
+	{
+		let current = nearestShape.transform.getRotationAngleZ();
+		current += 3.142/30;
+		nearestShape.transform.setRotationAngleZ(current);
+	}
+	else if(key == "x")
+	{
+		let current = nearestShape.transform.getRotationAngleZ();
+		current -= 3.142/30;
+		nearestShape.transform.setRotationAngleZ(current);
 	}
 	else if(key == '+')
 	{
@@ -232,5 +271,44 @@ document.addEventListener('keydown', (event) =>
 		current[1] -= 0.1;
 		current[2] -= 0.1;
 		nearestShape.transform.setScale(current);
+	}
+	else if(key == '[')
+	{
+		if(m==1)
+		{
+			window.eye[2] -= 0.1;
+			mat4.lookAt(viewMatrix,eye,[0,0,0],up);
+		}
+		else
+		{
+			window.eye[0] -= 0.1;
+			window.eye[1] -= 0.1;
+			window.eye[2] -= 0.1;
+			mat4.lookAt(viewMatrix,eye,[0,0,0],up);
+		}
+	}
+	else if(key == "]")
+	{
+		if(m==1)
+		{
+			window.eye[2] += 0.1;
+			mat4.lookAt(viewMatrix,eye,[0,0,0],up);
+		}
+		else
+		{
+			window.eye[0] += 0.1;
+			window.eye[1] += 0.1;
+			window.eye[2] += 0.1;
+			mat4.lookAt(viewMatrix,eye,[0,0,0],up);
+		}
+	}
+	else if(key == "j")
+	{
+	}
+	else if(key == "k")
+	{
+	}
+	else if(key == "l")
+	{
 	}
   }, false);
