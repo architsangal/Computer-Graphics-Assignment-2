@@ -2,14 +2,22 @@ import { Scene, Shape, WebGLRenderer, Shader } from './lib/threeD.js';
 import {vertexShaderSrc} from './shaders/vertex.js';
 import {fragmentShaderSrc} from './shaders/fragment.js';
 import objLoader from 'https://cdn.skypack.dev/webgl-obj-loader';
-import { vec4, mat4 } from 'https://cdn.skypack.dev/gl-matrix';
+import { vec3, vec4, mat4 } from 'https://cdn.skypack.dev/gl-matrix';
 
 // Global Variables
 function globalInit()
 {
 	window.viewMatrix = mat4.create();
 	window.projMatrix = mat4.create();
-	window.eye = [0,0,3];
+	
+	window.click_m2 = 0;
+	window.last_mouse_location = -1;
+
+	window.eye = vec3.create();
+	vec3.set(window.eye, 0, 0, 3);
+
+	window.CameraRotationAxis = 'y';
+
 	window.up = [0,1,0];
 	mat4.lookAt(viewMatrix,eye,[0,0,0],up);
 	mat4.perspective(projMatrix,45*Math.PI/180,1,0.1,1000);
@@ -36,8 +44,8 @@ let arrow_z = await importingObjFiles("arrow.obj");
 let object1 = await importingObjFiles("Object1.obj");
 let object2 = await importingObjFiles("Object2.obj");
 
-let render_X = 600;
-let render_Y = 600;
+let render_X = 800;
+let render_Y = 800;
 let m = 1;
 
 let scene = new Scene();
@@ -161,6 +169,14 @@ function onmousedown(event)
 			nearestShape.color = [0.1,0.1,0.1,1];
 			console.log(nearestShape.name);
 		}
+	}
+	else
+	{
+		if(click_m2 == 0)
+			click_m2 = 1;
+		else
+			click_m2 = 0;
+		last_mouse_location = event.clientX;
 	}
 }
 
@@ -304,11 +320,55 @@ document.addEventListener('keydown', (event) =>
 	}
 	else if(key == "j")
 	{
+		window.CameraRotationAxis = 'x';
 	}
 	else if(key == "k")
 	{
+		window.CameraRotationAxis = 'y';
 	}
 	else if(key == "l")
 	{
+		window.CameraRotationAxis = 'z';
 	}
   }, false);
+
+canvas.addEventListener('mousemove', (event) =>
+{
+	if(m == 2 && click_m2 == 1)
+	{
+		let rotationAngleAboutAxis = -0.25 * (Math.PI/ 180) * (event.clientX - last_mouse_location);
+		// (event.clientX - last_mouse_location) is the displacement. It can be negative and positive.
+
+		rotateCameraAboutAxis(rotationAngleAboutAxis);
+		last_mouse_location = event.clientX;
+	}
+});
+
+function rotateCameraAboutAxis(rotationAngle){
+	
+	let axisVector;
+	if(CameraRotationAxis == 'x')
+		axisVector = [1,0,0];
+	else if(CameraRotationAxis == 'y')
+		axisVector = [0,1,0];
+	else
+		axisVector = [0,0,1];
+
+	let transMat = mat4.create();
+	mat4.identity(transMat);
+
+	let eye_homo_dim = [eye[0],eye[1],eye[2],1];
+
+	mat4.rotate(transMat, transMat, rotationAngle, axisVector);
+	vec4.transformMat4(eye_homo_dim,eye_homo_dim,transMat);
+	eye = eye_homo_dim.slice();
+
+	let up_homo_dim = [up[0],up[1],up[2],1];
+	mat4.identity(transMat);
+	mat4.rotate(transMat, transMat, rotationAngle, axisVector);
+	vec4.transformMat4(up_homo_dim,up_homo_dim,transMat);
+	up = up_homo_dim.slice();
+
+	mat4.lookAt(viewMatrix,eye,[0,0,0],up);
+	mat4.perspective(projMatrix,45*Math.PI/180,1,0.1,1000);
+}
