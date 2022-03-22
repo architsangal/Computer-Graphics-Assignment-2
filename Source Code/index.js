@@ -28,6 +28,7 @@ function globalInit()
 	window.p0;
 	window.p1;
 	window.p2;
+	window.speed = 0.005;
 }
 globalInit();
 
@@ -357,6 +358,14 @@ document.addEventListener('keydown', (event) =>
 				animationMode = 0;
 		}
 	}
+	else if(key == "1")
+	{
+		window.speed -= 0.001;
+	}
+	else if(key == "2")
+	{
+		window.speed += 0.001;
+	}
   }, false);
 
 canvas.addEventListener('mousemove', (event) =>
@@ -487,7 +496,7 @@ function animatingSelectedObject()
 			nearestShape.transform.setTranslateY(tempY);
 			nearestShape.transform.setTranslateZ(tempZ);
 
-			t +=0.005;
+			t += window.speed;
 		}
 		else
 		{
