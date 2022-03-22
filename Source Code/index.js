@@ -23,6 +23,11 @@ function globalInit()
 	mat4.perspective(projMatrix,45*Math.PI/180,1,0.1,1000);
 
 	window.animationMode = 0;
+	window.t=0;
+	window.numClicks = 0;
+	window.p0;
+	window.p1;
+	window.p2;
 }
 globalInit();
 
@@ -47,6 +52,7 @@ let m = 1;
 
 let scene = new Scene();
 AddElementsToScene(scene);
+let nearestShape;
 
 // Renderer generation
 const renderer = new WebGLRenderer();
@@ -61,6 +67,7 @@ function animation()
 {
 	renderer.clear(0.8,0.8,0.8,1);
 	renderer.render(scene, shader);
+	animatingSelectedObject()
 }
 
 function AddElementsToScene(scene)
@@ -124,7 +131,6 @@ function AddElementsToScene(scene)
 // Canvas created
 // Adding Events to it
 let canvas = renderer.domElement;
-let nearestShape;
 canvas.addEventListener('mousedown', function(event){ onmousedown(event);});
 const data = new Uint8Array(4);
 
@@ -169,13 +175,17 @@ function onmousedown(event)
 	}
 	else if(m==1 && animationMode == 1)
 	{
-		// if(nearestShape != undefined)
-		// 	nearestShape.color = nearestShape.original_color;
-		// nearestShape = undefined;
-		console.log(nearestShape.centroid());
-		let mouseX = event.clientX;
-		let mouseY = event.clientY;
-		console.log(clipToWorld([(event.clientX-render_X)/render_X*2-1,-event.clientY/render_Y*2+1])+" "+mouseX+" "+mouseY+"\n");
+		if(numClicks == 0)
+		{
+			numClicks++;
+			window.p0 = nearestShape.centroid();
+			window.p1 = mouseToWorld([event.clientX,event.clientY]);
+		}
+		else if(numClicks == 1)
+		{
+			numClicks = 0;
+			window.p2 = mouseToWorld([event.clientX,event.clientY]);
+		}
 	}
 	else if(m==2)
 	{
@@ -407,30 +417,88 @@ function clipToWorld(point)
 	return worldCoor;
 }
 
-canvas.addEventListener('mousedown', function(event)
+// canvas.addEventListener('mousedown', function(event)
+// {
+// 	worldClick(event);
+// }
+// );
+
+// // testing function given by amit tomar
+// function worldClick(event)
+// {
+// 	// console.log(nearestShape.centroid())
+// 	console.log((event.clientX)/render_X*2-1 + " " + (-event.clientY/render_Y*2+1));
+// 	console.log(clipToWorld([(event.clientX)/render_X*2-1,-event.clientY/render_Y*2+1]));
+	
+// 	let tempX = nearestShape.transform.getTranslateX();
+// 	let tempY = nearestShape.transform.getTranslateY();
+// 	let tempZ = nearestShape.transform.getTranslateZ();
+
+// 	let worldCoor = clipToWorld([(event.clientX)/render_X*2-1,-event.clientY/render_Y*2+1]);
+
+// 	tempX[0] = worldCoor[0];
+// 	tempY[1] = worldCoor[1];
+// 	tempZ[2] = worldCoor[2];
+	
+// 	nearestShape.transform.setTranslateX(tempX);
+// 	nearestShape.transform.setTranslateY(tempY);
+// 	nearestShape.transform.setTranslateZ(tempZ);
+// 	// nearestShape.transform.translate = worldCoor;
+// }
+
+function mouseToWorld(mouse)
 {
-	worldClick(event);
+	return clipToWorld([(mouse[0])/render_X*2-1,-mouse[1]/render_Y*2+1]);
 }
-);
 
-// testing function given by amit tomar
-function worldClick(event)
+function animatingSelectedObject()
 {
-	console.log((event.clientX)/render_X*2-1 + " " + (-event.clientY/render_Y*2+1));
-	console.log(clipToWorld([(event.clientX)/render_X*2-1,-event.clientY/render_Y*2+1]));
-	
-	let tempX = nearestShape.transform.getTranslateX();
-	let tempY = nearestShape.transform.getTranslateY();
-	let tempZ = nearestShape.transform.getTranslateZ();
+	if(nearestShape == undefined)
+		return;
+	if(window.p0 == undefined || window.p1 == undefined || window.p2 == undefined)
+		return;
+	if(animationMode == 0)
+		return;
+	else if(animationMode == 1)
+	{
+		if(t<1)
+		{
+			let a_x = 2*window.p0[0] + 2*window.p2[0] - 4*window.p1[0];
+			let b_x = 4*window.p1[0] -   window.p2[0] - 3*window.p0[0];
+			let c_x = window.p0[0];
 
-	let worldCoor = clipToWorld([(event.clientX)/render_X*2-1,-event.clientY/render_Y*2+1]);
+			let a_y = 2*window.p0[1] + 2*window.p2[1] - 4*window.p1[1];
+			let b_y = 4*window.p1[1] -   window.p2[1] - 3*window.p0[1];
+			let c_y = window.p0[1];
 
-	tempX[0] = worldCoor[0];
-	tempY[1] = worldCoor[1];
-	tempZ[2] = worldCoor[2];
+			let a_z = 2*window.p0[2] + 2*window.p2[2] - 4*window.p1[2];
+			let b_z = 4*window.p1[2] -   window.p2[2] - 3*window.p0[2];
+			let c_z = window.p0[2];
+
+			let tempX = nearestShape.transform.getTranslateX();
+			let tempY = nearestShape.transform.getTranslateY();
+			let tempZ = nearestShape.transform.getTranslateZ();
+
+			tempX[0] = a_x * t * t + b_x * t + c_x;
+			tempY[1] = a_y * t * t + b_y * t + c_y;
+			tempZ[2] = a_z * t * t + b_z * t + c_z;
 	
-	nearestShape.transform.setTranslateX(tempX);
-	nearestShape.transform.setTranslateY(tempY);
-	nearestShape.transform.setTranslateZ(tempZ);
-	// nearestShape.transform.translate = worldCoor;
+			nearestShape.transform.setTranslateX(tempX);
+			nearestShape.transform.setTranslateY(tempY);
+			nearestShape.transform.setTranslateZ(tempZ);
+
+			t +=0.005;
+		}
+		else
+		{
+			t=0;
+			animationMode = 0;
+			if(nearestShape != undefined)
+				nearestShape.color = nearestShape.original_color;
+			nearestShape = undefined;
+			window.p0 = undefined;
+			window.p1 = undefined;
+			window.p2 = undefined;
+		}
+	}
 }
