@@ -40,12 +40,12 @@ async function importingObjFiles(name)
 	return meshdata;
 }
 
-let arrow_x = await importingObjFiles("arrow.obj");
-let arrow_y = await importingObjFiles("arrow.obj");
-let arrow_z = await importingObjFiles("arrow.obj");
+let arrow_x = await importingObjFiles("DoubleSidedArrow.obj");
+let arrow_y = await importingObjFiles("DoubleSidedArrow.obj");
+let arrow_z = await importingObjFiles("DoubleSidedArrow.obj");
 let object1 = await importingObjFiles("Object1.obj");
 let object2 = await importingObjFiles("Object2.obj");
-console.log(arrow_x);
+
 let render_X = 800;
 let render_Y = 800;
 let m = 1;
@@ -72,16 +72,8 @@ function animation()
 
 function AddElementsToScene(scene)
 {
-	const arrowX = new Shape(arrow_x,[1,0,0,1],false,"ArrowX");
-	let current = arrowX.transform.getScale();
-	current[0] += 2;
-	current[1] += 2;
-	current[2] += 2;
-	arrowX.transform.setScale(current);
-	scene.add(arrowX);
-
 	const arrowY = new Shape(arrow_y,[0,1,0,1],false,"ArrowY");
-	current = arrowY.transform.getScale();
+	let current = arrowY.transform.getScale();
 	current[0] += 2;
 	current[1] += 2;
 	current[2] += 2;
@@ -91,6 +83,14 @@ function AddElementsToScene(scene)
 	current += 3.142/2;
 	arrowY.transform.setRotationAngleZ(current);
 	scene.add(arrowY);
+
+	const arrowX = new Shape(arrow_x,[1,0,0,1],false,"ArrowX");
+	current = arrowX.transform.getScale();
+	current[0] += 2;
+	current[1] += 2;
+	current[2] += 2;
+	arrowX.transform.setScale(current);
+	scene.add(arrowX);
 
 	const arrowZ = new Shape(arrow_z,[0,0,1,1],false,"ArrowZ");
 	current = arrowZ.transform.getScale();
