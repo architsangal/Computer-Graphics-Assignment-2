@@ -93,7 +93,6 @@ export class Shader
 		return buffer;
 	}
 
-	// TODO Initially it was DYNAMIC_DRAW
 	bindArrayBuffer(buffer, data)
 	{
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);

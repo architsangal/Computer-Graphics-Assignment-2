@@ -46,6 +46,7 @@ let arrow_y = await importingObjFiles("DoubleSidedArrow.obj");
 let arrow_z = await importingObjFiles("DoubleSidedArrow.obj");
 let object1 = await importingObjFiles("Object1.obj");
 let object2 = await importingObjFiles("Object2.obj");
+let object3 = await importingObjFiles("Object3.obj");
 
 let render_X = 800;
 let render_Y = 800;
@@ -127,6 +128,24 @@ function AddElementsToScene(scene)
 	
 	scene.add(ballWithRing);
 
+	const diff_obj = new Shape(object3,[0.5,0.5,0.5,1],true,"Object 3");
+	
+	current = diff_obj.transform.getTranslateX();
+	current[0] += 0.5;
+	diff_obj.transform.setTranslateX(current);
+
+	current = diff_obj.transform.getTranslateY();
+	current[1] += 0.5;
+	diff_obj.transform.setTranslateY(current);
+
+	current = diff_obj.transform.getScale().slice();
+	current[0] -= 0.9;
+	current[1] -= 0.9;
+	current[2] -= 0.9;
+	diff_obj.transform.setScale(current);
+
+	scene.add(diff_obj);
+
 }
 
 // Canvas created
@@ -172,6 +191,7 @@ function onmousedown(event)
 		{
 			nearestShape.color = [0.1,0.1,0.1,1];
 			console.log(nearestShape.name);
+			console.log(nearestShape.centroid());
 		}
 	}
 	else if(m==1 && animationMode == 1)
@@ -179,7 +199,13 @@ function onmousedown(event)
 		if(numClicks == 0)
 		{
 			numClicks++;
-			window.p0 = nearestShape.centroid();
+
+			//nearestShape.centroid(); is not accurate so we will use location of the figure
+			let translate_init = nearestShape.transform.getTranslateX().slice();
+			translate_init[1] = nearestShape.transform.getTranslateY()[1];
+			translate_init[2] = nearestShape.transform.getTranslateZ()[2];
+			window.p0 = translate_init;
+			
 			window.p1 = mouseToWorld([event.clientX,event.clientY]);
 		}
 		else if(numClicks == 1)
